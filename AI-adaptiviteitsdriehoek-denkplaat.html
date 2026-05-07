@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-adaptiviteitsdriehoek — Denkplaat</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #FAFAF7;
+    color: #1A1A1A;
+    line-height: 1.5;
+  }
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 24px;
+  }
+
+  /* HEADER */
+  .header { margin-bottom: 32px; }
+  .eyebrow {
+    font-size: 12px;
+    font-weight: 600;
+    color: #004D46;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin: 0 0 8px;
+  }
+  .title {
+    font-size: 32px;
+    font-weight: 600;
+    margin: 0 0 6px;
+    color: #1A1A1A;
+  }
+  .subtitle {
+    font-size: 15px;
+    color: #555;
+    margin: 0 0 4px;
+  }
+  .authors {
+    font-size: 13px;
+    color: #888;
+    margin: 0;
+    font-style: italic;
+  }
+
+  /* L-SHAPE BRAND ELEMENT */
+  .l-shape {
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    border-left: 4px solid #F4752E;
+    border-bottom: 4px solid #F4752E;
+    margin-right: 12px;
+    vertical-align: middle;
+  }
+
+  /* STAGE */
+  .stage {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 40px;
+  }
+  @media (max-width: 720px) {
+    .stage { grid-template-columns: 1fr; }
+    .title { font-size: 24px; }
+  }
+
+  /* TRIANGLE PANEL */
+  .triangle-wrap {
+    background: #fff;
+    border: 1px solid #E5E5E0;
+    border-radius: 12px;
+    padding: 24px;
+    min-height: 380px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .triangle-svg {
+    width: 100%;
+    height: auto;
+    max-width: 340px;
+  }
+  .tri-side { cursor: pointer; transition: opacity 0.15s; }
+  .tri-side:hover { opacity: 0.7; }
+  .tri-side.active line,
+  .tri-side.active rect { stroke-width: 4; }
+  .triangle-hint {
+    font-size: 12px;
+    color: #888;
+    margin-top: 16px;
+    text-align: center;
+    font-style: italic;
+  }
+
+  /* INFO PANEL */
+  .info-panel {
+    background: #fff;
+    border: 1px solid #E5E5E0;
+    border-radius: 12px;
+    padding: 28px;
+    min-height: 380px;
+  }
+  .info-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 12px;
+    margin-bottom: 14px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .info-title {
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0 0 12px;
+    color: #1A1A1A;
+  }
+  .info-lead {
+    font-size: 15px;
+    color: #555;
+    line-height: 1.6;
+    margin: 0 0 16px;
+  }
+  .info-list {
+    font-size: 14px;
+    color: #1A1A1A;
+    line-height: 1.7;
+    padding-left: 20px;
+    margin: 0;
+  }
+  .info-list li { margin-bottom: 6px; }
+  .info-list strong { color: #004D46; }
+
+  /* SECTION LABEL */
+  .section-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin: 0 0 16px;
+    display: flex;
+    align-items: center;
+  }
+
+  /* QUESTIONS */
+  .questions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+  .q-card {
+    background: #fff;
+    border: 1px solid #E5E5E0;
+    border-radius: 8px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: left;
+    font-family: inherit;
+  }
+  .q-card:hover {
+    border-color: #004D46;
+    background: #F5FAF9;
+    transform: translateY(-1px);
+  }
+  .q-num {
+    font-size: 11px;
+    font-weight: 600;
+    color: #004D46;
+    margin: 0 0 6px;
+    letter-spacing: 0.05em;
+  }
+  .q-text {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #1A1A1A;
+    margin: 0;
+  }
+
+  /* MODAL */
+  .modal-bg {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-bg.open { display: flex; }
+  .modal {
+    background: #fff;
+    border-radius: 12px;
+    max-width: 520px;
+    width: 100%;
+    padding: 28px;
+    position: relative;
+  }
+  .modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #888;
+    line-height: 1;
+  }
+  .modal-close:hover { color: #1A1A1A; }
+  .modal-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: #F4752E;
+    color: #fff;
+  }
+  .modal-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 16px;
+    color: #1A1A1A;
+    line-height: 1.3;
+  }
+  .modal-section { margin-bottom: 16px; }
+  .modal-section h4 {
+    font-size: 12px;
+    font-weight: 600;
+    color: #555;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin: 0 0 6px;
+  }
+  .modal-section p {
+    font-size: 14px;
+    color: #1A1A1A;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* FOOTER */
+  .footer {
+    border-top: 1px solid #E5E5E0;
+    padding-top: 20px;
+    text-align: center;
+    font-size: 12px;
+    color: #888;
+  }
+  .footer strong { color: #004D46; }
+
+  /* PRINT */
+  @media print {
+    body { background: #fff; }
+    .q-card:hover { transform: none; }
+    .modal-bg { display: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <p class="eyebrow"><span class="l-shape"></span>Kernteam AI · Discussiestuk</p>
+    <h1 class="title">De AI-adaptiviteitsdriehoek</h1>
+    <p class="subtitle">Regie op toekomstbestendig CE-onderwijs</p>
+    <p class="authors">Henk Heijtlager &amp; Nick — namens het Kernteam AI</p>
+  </div>
+
+  <div class="stage">
+    <div class="triangle-wrap">
+      <svg class="triangle-svg" viewBox="0 0 340 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Adaptiviteitsdriehoek met drie zijden en regielaag">
+        <g class="tri-side" data-id="z1">
+          <line x1="170" y1="40" x2="40" y2="240" stroke="#004D46" stroke-width="3" />
+          <text x="70" y="140" font-size="13" font-weight="600" fill="#004D46" transform="rotate(-57 70 140)">Zijde 1 · Wendbaarheid</text>
+        </g>
+        <g class="tri-side" data-id="z2">
+          <line x1="40" y1="240" x2="300" y2="240" stroke="#004D46" stroke-width="3" />
+          <text x="100" y="262" font-size="13" font-weight="600" fill="#004D46">Zijde 2 · Docent</text>
+        </g>
+        <g class="tri-side" data-id="z3">
+          <line x1="170" y1="40" x2="300" y2="240" stroke="#004D46" stroke-width="3" />
+          <text x="210" y="140" font-size="13" font-weight="600" fill="#004D46" transform="rotate(57 210 140)">Zijde 3 · Werkveld</text>
+        </g>
+        <circle cx="170" cy="40" r="6" fill="#004D46" />
+        <circle cx="40" cy="240" r="6" fill="#004D46" />
+        <circle cx="300" cy="240" r="6" fill="#004D46" />
+        <line x1="40" y1="240" x2="50" y2="290" stroke="#F4752E" stroke-width="1.5" stroke-dasharray="3,3" opacity="0.6" />
+        <line x1="170" y1="240" x2="170" y2="290" stroke="#F4752E" stroke-width="1.5" stroke-dasharray="3,3" opacity="0.6" />
+        <line x1="300" y1="240" x2="290" y2="290" stroke="#F4752E" stroke-width="1.5" stroke-dasharray="3,3" opacity="0.6" />
+        <g class="tri-side" data-id="regie">
+          <rect x="20" y="290" width="300" height="54" rx="8" fill="#FBE5D6" stroke="#F4752E" stroke-width="3" />
+          <text x="170" y="312" text-anchor="middle" font-size="14" font-weight="600" fill="#A04915">Regielaag</text>
+          <text x="170" y="330" text-anchor="middle" font-size="11" fill="#A04915">Kernteam AI · waar de zijden samenkomen</text>
+        </g>
+      </svg>
+      <p class="triangle-hint">Klik op een zijde of de regielaag voor uitleg</p>
+    </div>
+
+    <div class="info-panel">
+      <span class="info-tag" id="info-tag" style="background: #E6EFEE; color: #004D46;">Welkom</span>
+      <h2 class="info-title" id="info-title">Vier elementen, één raamwerk</h2>
+      <p class="info-lead" id="info-lead">De driehoek beschrijft de inhoud van ons AI-onderwijs. De regielaag eronder organiseert de samenhang. Klik een element aan om verder te lezen.</p>
+      <ul class="info-list" id="info-list">
+        <li><strong>Zijde 1</strong> — wendbaarheid in het curriculum</li>
+        <li><strong>Zijde 2</strong> — de docent als leerregisseur</li>
+        <li><strong>Zijde 3</strong> — werkveld als strategische hefboom</li>
+        <li><strong>Regielaag</strong> — waar het samenkomt</li>
+      </ul>
+    </div>
+  </div>
+
+  <p class="section-label">Discussievragen voor het MT</p>
+  <div class="questions" id="questions"></div>
+
+  <div class="footer">
+    <p><strong>Kernteam AI</strong> · Hogeschool Leiden · Concept ter discussie</p>
+  </div>
+
+</div>
+
+<div class="modal-bg" id="modal-bg" role="dialog" aria-modal="true">
+  <div class="modal">
+    <button class="modal-close" id="modal-close" aria-label="Sluiten">&times;</button>
+    <span class="modal-tag">Discussievraag</span>
+    <h3 class="modal-title" id="modal-title"></h3>
+    <div class="modal-section">
+      <h4>Waar gaat dit over?</h4>
+      <p id="modal-context"></p>
+    </div>
+    <div class="modal-section">
+      <h4>Te bespreken</h4>
+      <p id="modal-discuss"></p>
+    </div>
+  </div>
+</div>
+
+<script>
+  const data = {
+    z1: {
+      tag: 'Zijde 1', tagBg: '#E6EFEE', tagFg: '#004D46',
+      title: 'Wendbaarheid via het schillenmodel',
+      lead: 'Duurzaam AI-beleid draait niet om het voorspellen van tools, maar om het organiseren van aanpassingsvermogen.',
+      bullets: [
+        '<strong>Stabiele kern</strong> — landelijk opleidingsprofiel, leeruitkomsten, OER',
+        '<strong>Flexibele schil</strong> — opdrachten, casuïstiek, werkvormen, AI-tools',
+        'Focus op duurzame commerciële vaardigheden, niet op één applicatie'
+      ]
+    },
+    z2: {
+      tag: 'Zijde 2', tagBg: '#E6EFEE', tagFg: '#004D46',
+      title: 'De docent als leerregisseur',
+      lead: 'Van eindproduct naar de kwaliteit van het denk-, analyse- en beslisproces erachter. Niet de output, maar het oordeel.',
+      bullets: [
+        '<strong>AI-geletterdheid</strong> — begrijpen hoe AI werkt en de praktijk verandert',
+        '<strong>Didactisch herontwerp</strong> — AI als sparringpartner, simulator, tegenspeler',
+        '<strong>Professionele kwetsbaarheid</strong> — bereid zijn samen te leren'
+      ]
+    },
+    z3: {
+      tag: 'Zijde 3', tagBg: '#E6EFEE', tagFg: '#004D46',
+      title: 'AI als strategische hefboom',
+      lead: 'Geen opleiding tot toolgebruiker. Tools veranderen continu, commerciële principes blijven.',
+      bullets: [
+        'AI als versneller van commerciële waarde',
+        'Menselijke kwaliteiten centraal: empathie, ethiek, creativiteit, context',
+        'Student voert de regie; AI ondersteunt'
+      ]
+    },
+    regie: {
+      tag: 'Regielaag', tagBg: '#FBE5D6', tagFg: '#A04915',
+      title: 'Waar de drie zijden samenkomen',
+      lead: 'Zonder regielaag dragen de zijden niets. Mét regielaag wordt de driehoek dragend. Voorstel: kernteam AI voert deze regie.',
+      bullets: [
+        '<strong>Vertalen</strong> — werkveld → docent, geletterdheid → curriculum',
+        '<strong>Prioriteren</strong> — niet alles wat speelt landt in het curriculum',
+        '<strong>Borgen</strong> — beleid rond toetsing, integriteit, gegevensgebruik',
+        '<strong>Verantwoorden</strong> — periodieke rapportage aan MT'
+      ]
+    }
+  };
+
+  const questions = [
+    {
+      text: 'Onderschrijven we de adaptiviteitsdriehoek met regielaag als kader?',
+      context: 'Het hele stuk staat of valt met dit principe. Drie inhoudelijke zijden plus een regielaag die ze verbindt. Alternatief: een ander organiserend principe, of geen overkoepelend kader.',
+      discuss: 'Vinden we de driehoek + regielaag conceptueel kloppend? Mist er iets essentieels? Of zien we een ander principe dat beter past bij onze opleiding?'
+    },
+    {
+      text: 'Onderschrijven we het schillenmodel (stabiele kern + flexibele schil)?',
+      context: 'Het schillenmodel scheidt wat blijft (opleidingsprofiel, leeruitkomsten, OER) van wat meebeweegt (opdrachten, casussen, tools). Dit raakt direct aan curriculumontwerp.',
+      discuss: 'Is deze tweedeling werkbaar voor onze curriculumcommissies? Wat hoort bij de kern, wat bij de schil? Wie beslist daarover?'
+    },
+    {
+      text: 'Kiezen we een extern kader (bv. aivoordocenten.nl) of eigen criteria?',
+      context: 'Voor docent-geletterdheid kunnen we aanhaken bij een extern Nederlands kader (sneller, externe legitimiteit) of eigen criteria opstellen (meer maatwerk, kost meer tijd).',
+      discuss: 'Wegen we snelheid + externe legitimiteit zwaarder dan maatwerk? Welke criteria misten we als we een extern kader adopteren?'
+    },
+    {
+      text: 'Krijgt het kernteam AI een formeel mandaat in de regielaag?',
+      context: 'De regielaag werkt alleen als het kernteam echt kan vertalen, prioriteren en adviseren — met directe lijn naar MT en curriculumcommissies. Zonder mandaat blijft het adviseren in de marge.',
+      discuss: 'Welk mandaat past bij dit team? Tot waar reikt de bevoegdheid? Hoe verhoudt zich dat tot bestaande commissies?'
+    },
+    {
+      text: 'Welke randvoorwaarden zijn non-negotiable (uren, mandaat, beleid)?',
+      context: 'Geletterdheid en didactisch herontwerp vragen geoormerkte uren. Zonder die uren wordt dit raamwerk extra werk bovenop de bestaande taak.',
+      discuss: 'Hoeveel uren reserveren we per docent? Hoeveel voor het kernteam? Wat verschuiven we daarvoor?'
+    },
+    {
+      text: 'Welke positie kiezen we richting toetsing en integriteit?',
+      context: 'Toetsing is de plek waar AI nu het meest concreet voor problemen zorgt. We kunnen dit binnen het raamwerk oppakken of als eigen traject parallel laten lopen.',
+      discuss: 'Pakken we dit gezamenlijk op of laten we het als eigen examencommissie-traject lopen? Wat communiceren we naar studenten?'
+    },
+    {
+      text: 'Welk eerste signaal geven we af aan docenten en studenten?',
+      context: 'De manier waarop we deze beweging aankondigen, bepaalt of mensen het zien als kans of als verplichting. Toon en timing zijn even belangrijk als inhoud.',
+      discuss: 'Wie communiceert wat, wanneer, naar welke groep? Wat is onze boodschap richting studenten? En richting collega\'s die nog huiverig zijn?'
+    }
+  ];
+
+  function showInfo(id) {
+    const d = data[id];
+    if (!d) return;
+    const tag = document.getElementById('info-tag');
+    tag.textContent = d.tag;
+    tag.style.background = d.tagBg;
+    tag.style.color = d.tagFg;
+    document.getElementById('info-title').textContent = d.title;
+    document.getElementById('info-lead').textContent = d.lead;
+    document.getElementById('info-list').innerHTML = d.bullets.map(b => '<li>' + b + '</li>').join('');
+    document.querySelectorAll('.tri-side').forEach(el => el.classList.remove('active'));
+    document.querySelector('.tri-side[data-id="' + id + '"]').classList.add('active');
+  }
+
+  document.querySelectorAll('.tri-side').forEach(el => {
+    el.addEventListener('click', function() { showInfo(this.dataset.id); });
+  });
+
+  const qContainer = document.getElementById('questions');
+  questions.forEach((q, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'q-card';
+    btn.innerHTML = '<p class="q-num">Vraag ' + (i+1) + '</p><p class="q-text">' + q.text + '</p>';
+    btn.addEventListener('click', () => openModal(q));
+    qContainer.appendChild(btn);
+  });
+
+  function openModal(q) {
+    document.getElementById('modal-title').textContent = q.text;
+    document.getElementById('modal-context').textContent = q.context;
+    document.getElementById('modal-discuss').textContent = q.discuss;
+    document.getElementById('modal-bg').classList.add('open');
+  }
+  function closeModal() {
+    document.getElementById('modal-bg').classList.remove('open');
+  }
+  document.getElementById('modal-close').addEventListener('click', closeModal);
+  document.getElementById('modal-bg').addEventListener('click', e => {
+    if (e.target.id === 'modal-bg') closeModal();
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeModal();
+  });
+</script>
+</body>
+</html>
